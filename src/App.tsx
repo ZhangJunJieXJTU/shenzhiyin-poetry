@@ -65,7 +65,7 @@ function SiteHeader() {
 
   return (
     <header className="site-header">
-      <Link className="brand" to="/" aria-label="深博吟诗歌作品集首页">
+      <Link className="brand" to="/" aria-label="深挚吟诗歌作品集首页">
         {content.site.brand}
       </Link>
 
@@ -169,7 +169,7 @@ function Hero() {
         <div className="manuscript-frame">
           <img
             src={assetUrl(content.site.heroImage)}
-            alt="深博吟少年时期的手写诗稿原页"
+            alt="深挚吟少年时期的手写诗稿原页"
           />
         </div>
       </div>
@@ -280,7 +280,7 @@ function ArchiveIndexPage() {
   useReveal()
 
   useEffect(() => {
-    document.title = "作品索引｜深博吟"
+    document.title = "作品索引｜深挚吟"
   }, [])
 
   return (
@@ -375,7 +375,7 @@ function WorkPage() {
       : null
 
   useEffect(() => {
-    document.title = poem ? `${poem.title}｜深博吟` : "未找到作品｜深博吟"
+    document.title = poem ? `${poem.title}｜深挚吟` : "未找到作品｜深挚吟"
   }, [poem])
 
   if (!poem) return <NotFoundPage />
@@ -408,7 +408,7 @@ function WorkPage() {
 
           <div className="work-reading-layout">
             <aside aria-hidden="true">
-              <span>深博吟</span>
+              <span>深挚吟</span>
               <i />
               <span>{content.site.period}</span>
             </aside>
@@ -522,7 +522,7 @@ function TimelinePage() {
   useReveal()
 
   useEffect(() => {
-    document.title = "写作时间轴｜深博吟"
+    document.title = "写作时间轴｜深挚吟"
   }, [])
 
   return (
@@ -602,7 +602,7 @@ function HomePage() {
   useReveal()
 
   useEffect(() => {
-    document.title = "深博吟｜少年诗稿"
+    document.title = "深挚吟｜少年诗稿"
   }, [])
 
   return (

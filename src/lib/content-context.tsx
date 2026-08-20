@@ -45,7 +45,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   if (!content) {
     return (
       <main className="content-state" aria-live="polite">
-        <span>深博吟</span>
+        <span>深挚吟</span>
         <h1>正在展开诗稿…</h1>
       </main>
     )

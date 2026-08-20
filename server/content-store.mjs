@@ -70,7 +70,7 @@ async function createSeedContent() {
     version: 1,
     updatedAt: new Date().toISOString(),
     site: {
-      brand: "深博吟",
+      brand: "深挚吟",
       period: "2018—2020",
       heroTitle: "我把少年时代，\n留在这些句子里。",
       heroDescription: "写于 2018—2020 年。关于雪、夜色、故乡，\n以及那些尚未学会告别的时刻。",
