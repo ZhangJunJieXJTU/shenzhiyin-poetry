@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { SiteSearch } from "@/components/site-search"
 import {
   assetUrl,
   getCollectionCategories,
@@ -77,22 +78,25 @@ function SiteHeader() {
         {!isStaticDeployment && <Link to="/editor">编校</Link>}
       </nav>
 
-      <Link className="catalog-link" to="/archive">
-        目录
-        <ArrowUpRight aria-hidden="true" />
-      </Link>
+      <div className="header-actions">
+        <SiteSearch />
+        <Link className="catalog-link" to="/archive">
+          目录
+          <ArrowUpRight aria-hidden="true" />
+        </Link>
 
-      <Button
-        aria-label={menuOpen ? "关闭导航菜单" : "打开导航菜单"}
-        aria-expanded={menuOpen}
-        aria-controls="mobile-navigation"
-        className="mobile-menu-button"
-        size="icon"
-        variant="ghost"
-        onClick={() => setMenuOpen((open) => !open)}
-      >
-        {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-      </Button>
+        <Button
+          aria-label={menuOpen ? "关闭导航菜单" : "打开导航菜单"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
+          className="mobile-menu-button"
+          size="icon"
+          variant="ghost"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </Button>
+      </div>
 
       <nav
         id="mobile-navigation"
