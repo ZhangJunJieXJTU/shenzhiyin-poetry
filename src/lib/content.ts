@@ -1,4 +1,4 @@
-export type CategoryId = "complete" | "drafts" | "prose"
+export type CategoryId = "complete" | "drafts" | "prose" | "later"
 
 export type PoemRecord = {
   id: string
@@ -34,7 +34,16 @@ export type SiteContent = {
 }
 
 export type CollectionLine = {
-  kind: "line" | "space" | "subheading" | "note" | "source" | "signature"
+  kind:
+    | "line"
+    | "space"
+    | "subheading"
+    | "quote"
+    | "list"
+    | "separator"
+    | "note"
+    | "source"
+    | "signature"
   text: string
 }
 
@@ -59,6 +68,13 @@ export const categoryMeta = [
     shortLabel: "随笔与书信",
     englishLabel: "NOTES & LETTERS",
     description: "随笔、书信与创作笔记，保留少年时期的真实语气。",
+  },
+  {
+    id: "later" as const,
+    label: "后来作品",
+    shortLabel: "后来作品",
+    englishLabel: "LATER WRITINGS",
+    description: "二〇二一至二〇二四年的诗歌、随笔与生活记录，依照日期编排。",
   },
 ]
 
@@ -85,11 +101,24 @@ export function parsePoemLines(body: string): CollectionLine[] {
     const text = rawLine.replace(/\s+$/, "")
 
     if (!text.trim()) return { kind: "space", text: "" }
-    if (text.startsWith("### ")) {
-      return { kind: "subheading", text: text.slice(4) }
+    const heading = text.match(/^#{1,6}\s+(.+)$/)
+    if (heading) {
+      return { kind: "subheading", text: heading[1] }
     }
     if (text.startsWith("> 原图：")) {
       return { kind: "source", text: text.replace(/^>\s*/, "") }
+    }
+    if (text.startsWith(">")) {
+      return { kind: "quote", text: text.replace(/^>\s?/, "") }
+    }
+    if (/^[-*+]\s+/.test(text)) {
+      return { kind: "list", text: text.replace(/^[-*+]\s+/, "") }
+    }
+    if (/^---+$/.test(text.trim())) {
+      return { kind: "separator", text: "" }
+    }
+    if (/^!\[[^\]]*\](?:\([^)]*\))?$/.test(text.trim())) {
+      return { kind: "note", text: "[原文此处附图]" }
     }
     if (text.startsWith("[") && text.endsWith("]")) {
       return { kind: "note", text }

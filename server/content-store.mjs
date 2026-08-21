@@ -101,7 +101,7 @@ function assertContent(content) {
     }
     if (typeof poem.title !== "string" || poem.title.length > 200) throw new Error("诗题无效")
     if (typeof poem.body !== "string" || poem.body.length > 100000) throw new Error("正文过长")
-    if (!["complete", "drafts", "prose"].includes(poem.categoryId)) throw new Error("分类无效")
+    if (!["complete", "drafts", "prose", "later"].includes(poem.categoryId)) throw new Error("分类无效")
   }
 }
 

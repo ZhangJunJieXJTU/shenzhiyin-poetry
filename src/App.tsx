@@ -151,7 +151,7 @@ function Hero() {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-side-note" aria-hidden="true">
-        <span>少年诗稿</span>
+        <span>文学作品</span>
         <i />
         <span>{content.site.period}</span>
       </div>
@@ -260,6 +260,16 @@ function CollectionText({ lines }: { lines: CollectionLine[] }) {
           )
         }
 
+        if (line.kind === "separator") {
+          return (
+            <span
+              key={`separator-${lineIndex}`}
+              className="collection-separator"
+              aria-hidden="true"
+            />
+          )
+        }
+
         return (
           <span
             key={`${line.kind}-${lineIndex}`}
@@ -289,7 +299,7 @@ function ArchiveIndexPage() {
       <main className="index-page">
         <header className="index-hero">
           <div>
-            <span>POETRY ARCHIVE · 2018—2020</span>
+            <span>WRITING ARCHIVE · {content.site.period}</span>
             <h1>作品索引</h1>
           </div>
           <div className="index-hero-meta">
@@ -343,7 +353,10 @@ function ArchiveIndexPage() {
                       to={`/works/${poem.index}`}
                     >
                       <span>{poem.index}</span>
-                      <strong>{poem.title}</strong>
+                      <div className="index-row-title">
+                        <strong>{poem.title}</strong>
+                        <time>{poem.date || "年份未详"}</time>
+                      </div>
                       <p>{preview}</p>
                       <ArrowRight aria-hidden="true" />
                     </Link>
@@ -403,6 +416,12 @@ function WorkPage() {
               第 {poem.index} 篇
               <br />
               {poem.categoryLabel}
+              {poem.date && (
+                <>
+                  <br />
+                  {poem.date}
+                </>
+              )}
             </p>
           </header>
 
@@ -480,6 +499,8 @@ function RouteScrollManager() {
 }
 
 function TimelinePreview() {
+  const { content } = useContent()
+
   return (
     <section
       className="timeline-preview"
@@ -489,13 +510,13 @@ function TimelinePreview() {
       <div className="timeline-preview-heading" data-reveal>
         <div>
           <span>WRITING YEARS</span>
-          <h2 id="timeline-preview-title">2018—2020</h2>
+          <h2 id="timeline-preview-title">{content.site.period}</h2>
         </div>
         <div>
           <p>
-            这些作品属于少年时代的三个年份。
+            这些作品跨越七个写作年份。
             <br />
-            往后的诗，会沿着这条线继续生长。
+            从纸页手稿，到后来持续写下的生活。
           </p>
           <Link to="/timeline">
             查看写作时间轴 <ArrowRight aria-hidden="true" />
@@ -518,7 +539,17 @@ function TimelinePreview() {
 
 function TimelinePage() {
   const { content } = useContent()
-  const collectionCount = getCollectionPoems(content).length
+  const poems = getCollectionPoems(content)
+  const collectionCount = poems.length
+  const worksByYear = new Map<string, typeof poems>()
+
+  poems.forEach((poem) => {
+    const year = poem.date.match(/^(\d{4})/)?.[1]
+    if (!year) return
+    const yearWorks = worksByYear.get(year) ?? []
+    yearWorks.push(poem)
+    worksByYear.set(year, yearWorks)
+  })
   useReveal()
 
   useEffect(() => {
@@ -531,7 +562,7 @@ function TimelinePage() {
       <main className="timeline-page">
         <header className="timeline-hero">
           <div>
-            <span>2018 → TO BE CONTINUED</span>
+            <span>{content.site.period} → TO BE CONTINUED</span>
             <h1>写作时间轴</h1>
           </div>
           <div className="timeline-hero-meta">
@@ -545,48 +576,79 @@ function TimelinePage() {
         </header>
 
         <section className="timeline-story" aria-label="2018 至今的写作时间轴">
-          {timelineChapters.map((chapter, chapterIndex) => (
-            <article
-              key={chapter.year}
-              className="timeline-entry"
-              id={chapter.future ? "year-next" : `year-${chapter.year}`}
-              data-future={chapter.future || undefined}
-              data-reveal
-            >
-              <div className="timeline-year">
-                <span>{String(chapterIndex + 1).padStart(2, "0")}</span>
-                <strong>{chapter.year}</strong>
-              </div>
+          {timelineChapters.map((chapter, chapterIndex) => {
+            const chapterWorks = worksByYear.get(chapter.year) ?? []
 
-              <div className="timeline-axis" aria-hidden="true">
-                <i />
-              </div>
-
-              <div className="timeline-entry-content">
-                <div className="timeline-entry-copy">
-                  <span>{chapter.label}</span>
-                  <h2>{chapter.title}</h2>
-                  <p>{chapter.description}</p>
-                  <small>{chapter.note}</small>
+            return (
+              <article
+                key={chapter.year}
+                className="timeline-entry"
+                id={chapter.future ? "year-next" : `year-${chapter.year}`}
+                data-future={chapter.future || undefined}
+                data-reveal
+              >
+                <div className="timeline-year">
+                  <span>{String(chapterIndex + 1).padStart(2, "0")}</span>
+                  <strong>{chapter.year}</strong>
                 </div>
 
-                {chapter.image ? (
-                  <figure>
-                    <img src={assetUrl(chapter.image)} alt={chapter.imageAlt} />
-                  </figure>
-                ) : (
-                  <div className="timeline-future-frame" aria-hidden="true">
-                    <span>+</span>
-                    <p>下一年</p>
+                <div className="timeline-axis" aria-hidden="true">
+                  <i />
+                </div>
+
+                <div className="timeline-entry-content">
+                  <div className="timeline-entry-copy">
+                    <span>{chapter.label}</span>
+                    <h2>{chapter.title}</h2>
+                    <p>{chapter.description}</p>
+                    <small>{chapter.note}</small>
                   </div>
-                )}
-              </div>
-            </article>
-          ))}
+
+                  <div className="timeline-entry-side">
+                    {chapter.image && (
+                      <figure>
+                        <img
+                          src={assetUrl(chapter.image)}
+                          alt={chapter.imageAlt}
+                        />
+                      </figure>
+                    )}
+
+                    {chapterWorks.length > 0 && (
+                      <div className="timeline-work-index">
+                        <header>
+                          <span>DATED WORKS</span>
+                          <strong>{chapterWorks.length}</strong>
+                        </header>
+                        <div className="timeline-work-list">
+                          {chapterWorks.map((poem) => (
+                            <Link key={poem.id} to={`/works/${poem.index}`}>
+                              <time>
+                                {poem.date.replace(`${chapter.year} · `, "")}
+                              </time>
+                              <span>{poem.title}</span>
+                              <ArrowRight aria-hidden="true" />
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {chapter.future && (
+                      <div className="timeline-future-frame" aria-hidden="true">
+                        <span>+</span>
+                        <p>下一年</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </article>
+            )
+          })}
         </section>
 
         <div className="timeline-end" data-reveal>
-          <span>2018—2020 · 少年诗稿</span>
+          <span>{content.site.period} · 文学作品集</span>
           <h2>时间没有结束，诗也没有。</h2>
           <Link to="/archive">
             浏览这一时期的全部作品 <ArrowRight aria-hidden="true" />
@@ -602,7 +664,7 @@ function HomePage() {
   useReveal()
 
   useEffect(() => {
-    document.title = "深挚吟｜少年诗稿"
+    document.title = "深挚吟｜文学作品集"
   }, [])
 
   return (
