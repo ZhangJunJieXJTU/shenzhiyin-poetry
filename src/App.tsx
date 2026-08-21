@@ -28,7 +28,7 @@ import {
 } from "@/lib/content"
 import { ContentProvider, useContent } from "@/lib/content-context"
 import { EditorPage } from "@/components/editor-page"
-import { timelineChapters } from "@/lib/timeline"
+import { getTimelineChapters } from "@/lib/timeline"
 
 function useReveal() {
   useEffect(() => {
@@ -504,6 +504,11 @@ function RouteScrollManager() {
 
 function TimelinePreview() {
   const { content } = useContent()
+  const poems = getCollectionPoems(content)
+  const timelineChapters = getTimelineChapters(poems.map((poem) => poem.date))
+  const writingYearCount = timelineChapters.filter(
+    (chapter) => !chapter.future
+  ).length
 
   return (
     <section
@@ -518,7 +523,7 @@ function TimelinePreview() {
         </div>
         <div>
           <p>
-            这些作品跨越七个写作年份。
+            这些作品跨越 {writingYearCount} 个写作年份。
             <br />
             从纸页手稿，到后来持续写下的生活。
           </p>
@@ -545,6 +550,7 @@ function TimelinePage() {
   const { content } = useContent()
   const poems = getCollectionPoems(content)
   const collectionCount = poems.length
+  const timelineChapters = getTimelineChapters(poems.map((poem) => poem.date))
   const worksByYear = new Map<string, typeof poems>()
 
   poems.forEach((poem) => {
@@ -553,6 +559,9 @@ function TimelinePage() {
     const yearWorks = worksByYear.get(year) ?? []
     yearWorks.push(poem)
     worksByYear.set(year, yearWorks)
+  })
+  worksByYear.forEach((yearWorks) => {
+    yearWorks.sort((left, right) => left.date.localeCompare(right.date))
   })
   useReveal()
 
@@ -605,7 +614,11 @@ function TimelinePage() {
                     <span>{chapter.label}</span>
                     <h2>{chapter.title}</h2>
                     <p>{chapter.description}</p>
-                    <small>{chapter.note}</small>
+                    <small>
+                      {chapter.showWorkCount && chapterWorks.length > 0
+                        ? `${chapterWorks.length} 篇有明确日期的作品`
+                        : chapter.note}
+                    </small>
                   </div>
 
                   <div className="timeline-entry-side">
