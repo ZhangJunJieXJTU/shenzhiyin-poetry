@@ -189,7 +189,7 @@ const works = selections
   .sort((left, right) => left.date.iso.localeCompare(right.date.iso) || left.id.localeCompare(right.id))
 
 const current = await readContent()
-const retainedPoems = current.poems.filter((poem) => !poem.id.startsWith("weibo-"))
+const retainedPoems = current.poems.filter((poem) => !/^weibo-\d+$/.test(poem.id))
 const firstNumber = Math.max(...retainedPoems.map((poem) => poem.number)) + 1
 
 const importedPoems = works.map((work, index) => {

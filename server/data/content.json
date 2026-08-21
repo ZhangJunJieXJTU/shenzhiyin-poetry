@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-21T04:28:51.762Z",
+  "updatedAt": "2026-08-21T05:12:40.057Z",
   "site": {
     "brand": "深挚吟",
     "period": "2018—2025",
@@ -3716,6 +3716,20 @@
       "categoryId": "complete",
       "date": "2025 · 09.14",
       "excerpt": "我每次一吵架就会想",
+      "image": "/manuscripts/loose-sheet.jpg",
+      "imageAlt": "深挚吟微博作品数字存档",
+      "featured": false,
+      "featuredOrder": null,
+      "published": true
+    },
+    {
+      "id": "weibo-7479263676-4640310103378376",
+      "number": 266,
+      "title": "这货年纪轻轻怎么这么有才",
+      "body": "说实话，有时候我以一个客观的角度去看我自己写的长文短句，都忍不住感慨，这货年纪轻轻怎么这么有才。\n\n> 原载微博：2021年05月24日 · https://weibo.com/7479263676/KgUEieaRW",
+      "categoryId": "prose",
+      "date": "2021 · 05.24",
+      "excerpt": "说实话，有时候我以一个客观的角度去看我自己写的长文短句，都忍不住感慨，这货年纪轻轻怎么这么有才。",
       "image": "/manuscripts/loose-sheet.jpg",
       "imageAlt": "深挚吟微博作品数字存档",
       "featured": false,
