@@ -1,4 +1,4 @@
-export type CategoryId = "complete" | "drafts" | "prose" | "later"
+export type CategoryId = "complete" | "drafts" | "prose"
 
 export type PoemRecord = {
   id: string
@@ -53,28 +53,21 @@ export const categoryMeta = [
     label: "较完整诗稿",
     shortLabel: "完整诗稿",
     englishLabel: "COLLECTED POEMS",
-    description: "较为完整的少年诗作，依照原稿整理次序全文收录。",
+    description: "较为完整的诗歌作品，依照原稿与写作时间全文收录。",
   },
   {
     id: "drafts" as const,
     label: "草稿与残句",
     shortLabel: "草稿与残句",
     englishLabel: "DRAFTS & FRAGMENTS",
-    description: "未定稿、课堂片段与写在演算纸边缘的句子。",
+    description: "未定稿、课堂片段、清单与仍在生长的句子。",
   },
   {
     id: "prose" as const,
     label: "随笔与书信",
     shortLabel: "随笔与书信",
     englishLabel: "NOTES & LETTERS",
-    description: "随笔、书信与创作笔记，保留少年时期的真实语气。",
-  },
-  {
-    id: "later" as const,
-    label: "后来作品",
-    shortLabel: "后来作品",
-    englishLabel: "LATER WRITINGS",
-    description: "二〇二一至二〇二四年的诗歌、随笔与生活记录，依照日期编排。",
+    description: "随笔、书信、小说与创作笔记，保留写作当时的真实语气。",
   },
 ]
 

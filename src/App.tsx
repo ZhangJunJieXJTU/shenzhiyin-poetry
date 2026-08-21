@@ -305,7 +305,7 @@ function ArchiveIndexPage() {
           <div className="index-hero-meta">
             <strong>{String(collectionCount).padStart(2, "0")}</strong>
             <p>
-              依照原稿整理顺序编排。
+              依照原稿与写作时间编排。
               <br />
               选择一篇，进入独立阅读页。
             </p>

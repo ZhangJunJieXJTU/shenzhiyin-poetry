@@ -2,7 +2,7 @@ import { createHash } from "node:crypto"
 import { readFile, readdir } from "node:fs/promises"
 import path from "node:path"
 
-import { readContent, writeContent } from "../server/content-store.mjs"
+import { writeContent } from "../server/content-store.mjs"
 
 const sourceDirectory = process.argv[2]
 
@@ -12,6 +12,68 @@ if (!sourceDirectory) {
 
 const filenamePattern = /^(.*)（(\d{4})-(\d{2})-(\d{2})）\.md$/
 const collator = new Intl.Collator("zh-CN")
+
+const proseTitles = new Set([
+  "神与人的迷惘之夜",
+  "走着",
+  "该怎样描述最近这几天",
+  "坠入文学与诗的世界",
+  "沈阳，竟是一个多雨的城",
+  "呼吸之野",
+  "论火锅里小料的作用",
+  "千里咫尺",
+  "想分享给你的歌",
+  "德令哈小寺",
+  "豁达，是对人类最大的惩罚",
+  "好久没有更新公众号",
+  "一切意外终会是如约而至的欢喜",
+  "给我的A348与记忆纷飞",
+  "列车",
+  "一只云没的醒来后活着",
+  "只道寻常",
+  "秋夜记",
+  "每一次的真实与确幸都值得纪念",
+  "如果上帝再给我一次机会",
+  "一个世界的生命与一个人的生活",
+  "沈阳的雪",
+  "孤单北半球的相聚",
+  "映城",
+  "你何时见到夕阳而低首",
+  "你会在哪一刻突然思绪翻涌",
+  "有没有那么一首歌，让你突然想起某一时刻",
+  "总有些心语漫舞在夜里",
+  "四月十四日凌晨",
+  "Someone Like You——很像你的人",
+  "深挚吟一周年",
+  "这海纷扬起，何以忽地下满了雨",
+  "给自己的大二下学期总结",
+  "Rainbow Mile",
+  "该怎样度过浑南突然的冬天",
+  "爱是什么呀",
+  "给王老师的生日信",
+  "我们该怎样理解初雪",
+  "关于过去日子的心路历程与未来规划",
+  "请让我回应自己——致2022",
+  "早晨从中午开始",
+  "给柳老师交作业",
+  "关于《瞬息全宇宙》",
+  "咖啡店里的二月小记",
+  "近百日小记",
+  "六月小记",
+  "一碗豆腐脑比星星更温暖",
+  "实训结束之后",
+  "520纪念",
+  "文字是最疼我的",
+  "在文章面前，我总是毫不遮掩自己",
+])
+
+const draftTitles = new Set(["用太多的经历", "我是谁呢", "不敢回看"])
+
+function categoryFor(title) {
+  if (draftTitles.has(title)) return "drafts"
+  if (proseTitles.has(title)) return "prose"
+  return "complete"
+}
 
 function validateDate(year, month, day, filename) {
   const isoDate = `${year}-${month}-${day}`
@@ -80,7 +142,23 @@ if (duplicateTitles.length) {
   )
 }
 
-const current = await readContent()
+const knownTitles = new Set(works.map((work) => work.title))
+const unknownClassifications = [...proseTitles, ...draftTitles].filter(
+  (title) => !knownTitles.has(title)
+)
+
+if (unknownClassifications.length) {
+  throw new Error(
+    `分类清单中存在未知标题：${unknownClassifications.join("、")}`
+  )
+}
+
+const current = JSON.parse(
+  await readFile(
+    new URL("../server/data/content.json", import.meta.url),
+    "utf8"
+  )
+)
 const retainedPoems = current.poems.filter(
   (poem) => !poem.id.startsWith("effie-")
 )
@@ -91,7 +169,7 @@ const importedPoems = works.map((work, index) => ({
   number: firstNumber + index,
   title: work.title,
   body: work.body,
-  categoryId: "later",
+  categoryId: categoryFor(work.title),
   date: `${work.year} · ${work.month}.${work.day}`,
   excerpt: firstReadableLine(work.body).slice(0, 80),
   image: "/manuscripts/old-page.jpg",
@@ -117,8 +195,14 @@ const nextContent = {
 
 await writeContent(nextContent)
 
-const counts = Object.entries(
-  Object.groupBy(works, (work) => work.year)
-).map(([year, matches]) => `${year}: ${matches.length}`)
+const counts = Object.entries(Object.groupBy(works, (work) => work.year)).map(
+  ([year, matches]) => `${year}: ${matches.length}`
+)
 
-console.log(`已导入 ${importedPoems.length} 篇作品（${counts.join("，")}）`)
+const categoryCounts = Object.entries(
+  Object.groupBy(importedPoems, (poem) => poem.categoryId)
+).map(([category, matches]) => `${category}: ${matches.length}`)
+
+console.log(
+  `已导入 ${importedPoems.length} 篇作品（${counts.join("，")}；${categoryCounts.join("，")}）`
+)
